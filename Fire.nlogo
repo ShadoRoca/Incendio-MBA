@@ -25,9 +25,11 @@ to go
   if not any? turtles  ;; either fires or embers
     [ stop ]
   ask fires
-    [ ask neighbors4 with [pcolor = green]
-        [ ignite ]
-      set breed embers ]
+    [ ask neighbors4 with [pcolor = green] [
+      if random 100 < probabilidad-de-propagarse[
+        ignite
+      ]]
+    set breed embers]
   fade-embers
   tick
 end
@@ -54,9 +56,9 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-200
+417
 10
-710
+927
 521
 -1
 -1
@@ -100,7 +102,7 @@ density
 density
 0.0
 99.0
-57.0
+79.0
 1.0
 1
 %
@@ -139,6 +141,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+5
+183
+263
+216
+probabilidad-de-propagarse
+probabilidad-de-propagarse
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

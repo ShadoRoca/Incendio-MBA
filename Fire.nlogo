@@ -26,8 +26,41 @@ to go
     [ stop ]
   ask fires
     [ ask neighbors4 with [pcolor = green] [
-      if random 100 < probabilidad-de-propagarse[
+
+      let probabilidad probabilidad-de-propagarse
+
+      let direccion towards myself ;; En dónde está el árbol quemandose con respecto al árbol verde
+
+      ;;El fuego viene desde el norte
+      if direccion = 0 [
+        set probabilidad probabilidad - viento-sur-norte
+      ]
+
+      ;;El fuego viene desde el este
+      if direccion = 90 [
+        set probabilidad probabilidad - viento-oeste-este
+      ]
+
+      ;;El fuego viene desde el sur
+      if direccion = 180 [
+        set probabilidad probabilidad + viento-sur-norte
+      ]
+
+      ;;El fuego viene desde el este
+      if direccion = 270 [
+        set probabilidad probabilidad + viento-oeste-este
+      ]
+
+      if random 100 < probabilidad[
         ignite
+        if propagacion-larga-distancia [
+          let target patch-at (viento-oeste-este / 5) (viento-sur-norte / 5)
+          if target != nobody and [pcolor] of target = green [
+            ask target[
+              ignite
+            ]
+          ]
+        ]
       ]]
     set breed embers]
   fade-embers
@@ -42,7 +75,7 @@ to ignite  ;; patch procedure
   set burned-trees burned-trees + 1
 end
 
-;; achieve fading color effect for the fire as it burns
+;; Hace que los patches que representan los árboles quemados se tornen cada vez más negros
 to fade-embers
   ask embers
     [ set color color - 0.3  ;; make red darker
@@ -83,10 +116,10 @@ ticks
 30.0
 
 MONITOR
-43
-131
-158
-176
+955
+14
+1070
+59
 percent burned
 (burned-trees / initial-trees)\n* 100
 1
@@ -94,25 +127,25 @@ percent burned
 11
 
 SLIDER
-5
-38
-190
-71
+85
+80
+270
+113
 density
 density
 0.0
 99.0
-79.0
+76.0
 1.0
 1
 %
 HORIZONTAL
 
 BUTTON
-106
-79
-175
-115
+186
+121
+255
+157
 go
 go
 T
@@ -126,10 +159,10 @@ NIL
 0
 
 BUTTON
-26
-79
-96
-115
+106
+121
+176
+157
 setup
 setup
 NIL
@@ -143,15 +176,56 @@ NIL
 1
 
 SLIDER
-5
-183
-263
-216
+58
+195
+316
+228
 probabilidad-de-propagarse
 probabilidad-de-propagarse
 0
 100
-50.0
+33.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+60
+248
+319
+281
+propagacion-larga-distancia
+propagacion-larga-distancia
+0
+1
+-1000
+
+SLIDER
+91
+290
+263
+323
+viento-sur-norte
+viento-sur-norte
+-25
+25
+25.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+85
+335
+269
+368
+viento-oeste-este
+viento-oeste-este
+-25
+25
+25.0
 1
 1
 NIL

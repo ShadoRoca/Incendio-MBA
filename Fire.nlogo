@@ -9,19 +9,25 @@ breed [embers ember]  ;; turtles gradually fading from red to near black
 to setup
   clear-all
   set-default-shape turtles "square"
-  ;; make some green trees
-  ask patches with [(random-float 100) < density]
+  if not distribucion-personalizada [
+    ;; make some green trees
+    ask patches with [(random-float 100) < density]
     [ set pcolor green ]
-  ;; make a column of burning trees
-  ask patches with [pxcor = min-pxcor]
+    ;; make a column of burning trees
+    ask patches with [pxcor = min-pxcor]
     [ ignite ]
-  ;; set tree counts
-  set initial-trees count patches with [pcolor = green]
+    ;; set tree counts
+    set initial-trees count patches with [pcolor = green]
+  ]
   set burned-trees 0
   reset-ticks
 end
 
 to go
+  if distribucion-personalizada and ticks = 0 [
+    ask n-of 10 patches with [pcolor = green] [ ignite ]
+    set initial-trees count patches with [pcolor = green]
+  ]
   if not any? turtles  ;; either fires or embers
     [ stop ]
   ask fires
@@ -67,6 +73,16 @@ to go
   tick
 end
 
+to borrar
+  ask patches [set pcolor black]
+end
+
+to color-celdas [c]
+  while [mouse-down?]
+    [ ask patch mouse-xcor mouse-ycor [set pcolor c]
+  ]
+end
+
 ;; creates the fire turtles
 to ignite  ;; patch procedure
   sprout-fires 1
@@ -89,13 +105,13 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-417
-10
-927
-521
+386
+14
+845
+474
 -1
 -1
-2.0
+4.47
 1
 10
 1
@@ -105,10 +121,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--125
-125
--125
-125
+-50
+50
+-50
+50
 1
 1
 1
@@ -116,10 +132,10 @@ ticks
 30.0
 
 MONITOR
-955
-14
-1070
-59
+881
+16
+996
+61
 percent burned
 (burned-trees / initial-trees)\n* 100
 1
@@ -127,10 +143,10 @@ percent burned
 11
 
 SLIDER
-85
-80
-270
-113
+110
+17
+295
+50
 density
 density
 0.0
@@ -142,10 +158,10 @@ density
 HORIZONTAL
 
 BUTTON
-186
-121
-255
-157
+211
+58
+280
+94
 go
 go
 T
@@ -159,10 +175,10 @@ NIL
 0
 
 BUTTON
-106
-121
-176
-157
+131
+58
+201
+94
 setup
 setup
 NIL
@@ -176,36 +192,36 @@ NIL
 1
 
 SLIDER
-58
-195
-316
-228
+78
+107
+336
+140
 probabilidad-de-propagarse
 probabilidad-de-propagarse
 0
 100
-33.0
+74.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-60
-248
-319
-281
+80
+160
+339
+193
 propagacion-larga-distancia
 propagacion-larga-distancia
-0
+1
 1
 -1000
 
 SLIDER
-91
-290
-263
-323
+122
+202
+294
+235
 viento-sur-norte
 viento-sur-norte
 -25
@@ -217,10 +233,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-85
-335
-269
-368
+116
+247
+300
+280
 viento-oeste-este
 viento-oeste-este
 -25
@@ -230,6 +246,51 @@ viento-oeste-este
 1
 NIL
 HORIZONTAL
+
+SWITCH
+84
+298
+340
+331
+distribucion-personalizada
+distribucion-personalizada
+0
+1
+-1000
+
+BUTTON
+99
+351
+165
+384
+NIL
+borrar
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+217
+349
+331
+382
+plantar árboles
+color-celdas green
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -605,7 +666,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.2.0
 @#$#@#$#@
 set density 60.0
 setup

@@ -1,3 +1,5 @@
+extensions [csv]
+
 globals [
   initial-trees   ;; how many trees (green patches) we started with
   burned-trees    ;; how many have burned so far
@@ -100,6 +102,32 @@ to fade-embers
           die ] ]
 end
 
+to csv
+  let file user-new-file
+  if is-string? file[
+    file-open file
+    foreach sort patches[p ->
+      ask p [
+        file-print(word pxcor "," pycor "," pcolor)
+      ]
+    ]
+    file-close
+  ]
+end
+
+to cargar-distribucion
+  file-open user-file
+
+  while [not file-at-end?] [
+    let row csv:from-row file-read-line
+    ask patch (item 0 row) (item 1 row) [
+      set pcolor (item 2 row)
+    ]
+
+  ]
+
+  file-close
+end
 
 ; Copyright 1997 Uri Wilensky.
 ; See Info tab for full copyright and license.
@@ -132,10 +160,10 @@ ticks
 30.0
 
 MONITOR
-881
-16
-996
-61
+152
+448
+267
+493
 percent burned
 (burned-trees / initial-trees)\n* 100
 1
@@ -151,7 +179,7 @@ density
 density
 0.0
 99.0
-76.0
+55.0
 1.0
 1
 %
@@ -213,7 +241,7 @@ SWITCH
 193
 propagacion-larga-distancia
 propagacion-larga-distancia
-1
+0
 1
 -1000
 
@@ -259,10 +287,10 @@ distribucion-personalizada
 -1000
 
 BUTTON
-99
-351
-165
-384
+230
+348
+341
+381
 NIL
 borrar
 NIL
@@ -276,10 +304,10 @@ NIL
 1
 
 BUTTON
-217
-349
-331
-382
+84
+348
+206
+381
 plantar árboles
 color-celdas green
 T
@@ -291,6 +319,76 @@ NIL
 NIL
 NIL
 0
+
+BUTTON
+85
+395
+207
+428
+guardar distribución
+csv
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+231
+395
+341
+428
+cargar distribucion
+cargar-distribucion
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+PLOT
+875
+16
+1442
+265
+arboles quemándose
+ticks
+arboles
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"quemandose" 1.0 0 -16777216 true "" "plot count turtles with [color = red]"
+
+PLOT
+875
+278
+1444
+492
+arboles quemados
+tick
+arboles
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot burned-trees"
 
 @#$#@#$#@
 ## WHAT IS IT?

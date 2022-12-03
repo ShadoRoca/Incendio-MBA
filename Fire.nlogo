@@ -25,11 +25,51 @@ to go
   if not any? turtles  ;; either fires or embers
     [ stop ]
   ask fires
-    [ ask neighbors4 with [pcolor = green] [
+    [ ask neighbors with [pcolor = green] [
 
       let probabilidad probabilidad-de-propagarse
 
       let direccion towards myself ;; En dónde está el árbol quemandose con respecto al árbol verde
+
+      ;;El fuego viene desde el noreste
+      if direccion = 45 [
+        ifelse vecindad-moore [
+          set probabilidad probabilidad - viento-sur-norte
+          set probabilidad probabilidad - viento-oeste-este
+        ] [
+          set probabilidad 0 ;;Si no es vecindad de moore entonces lo ignoramos
+        ]
+      ]
+
+      ;;El fuego viene desde el sureste
+      if direccion = 135 [
+        ifelse vecindad-moore [
+          set probabilidad probabilidad + viento-sur-norte
+          set probabilidad probabilidad - viento-oeste-este
+        ] [
+          set probabilidad 0 ;;Si no es vecindad de moore entonces lo ignoramos
+        ]
+      ]
+
+      ;;El fuego viene desde el suroeste
+      if direccion = 225 [
+        ifelse vecindad-moore [
+          set probabilidad probabilidad + viento-sur-norte
+          set probabilidad probabilidad + viento-oeste-este
+        ] [
+          set probabilidad 0 ;;Si no es vecindad de moore entonces lo ignoramos
+        ]
+      ]
+
+      ;;El fuego viene desde el noroeste
+      if direccion = 315 [
+        ifelse vecindad-moore [
+          set probabilidad probabilidad - viento-sur-norte
+          set probabilidad probabilidad + viento-oeste-este
+        ] [
+          set probabilidad 0 ;;Si no es vecindad de moore entonces lo ignoramos
+        ]
+      ]
 
       ;;El fuego viene desde el norte
       if direccion = 0 [
@@ -46,7 +86,7 @@ to go
         set probabilidad probabilidad + viento-sur-norte
       ]
 
-      ;;El fuego viene desde el este
+      ;;El fuego viene desde el oeste
       if direccion = 270 [
         set probabilidad probabilidad + viento-oeste-este
       ]
@@ -230,6 +270,17 @@ viento-oeste-este
 1
 NIL
 HORIZONTAL
+
+SWITCH
+93
+379
+265
+412
+vecindad-moore
+vecindad-moore
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

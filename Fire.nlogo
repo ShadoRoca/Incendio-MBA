@@ -76,12 +76,13 @@ to go
 end
 
 to borrar
-  ask patches [set pcolor black]
+  clear-all
 end
 
 to color-celdas [c]
-  while [mouse-down?]
-    [ ask patch mouse-xcor mouse-ycor [set pcolor c]
+  reset-ticks
+  while [mouse-down?][
+    ask patch mouse-xcor mouse-ycor [set pcolor c]
   ]
 end
 
@@ -764,7 +765,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.0
+NetLogo 6.2.2
 @#$#@#$#@
 set density 60.0
 setup

@@ -1,3 +1,5 @@
+extensions [csv]
+
 globals [
   initial-trees   ;; how many trees (green patches) we started with
   burned-trees    ;; how many have burned so far
@@ -7,21 +9,27 @@ breed [fires fire]    ;; bright red turtles -- the leading edge of the fire
 breed [embers ember]  ;; turtles gradually fading from red to near black
 
 to setup
-  clear-all
+   clear-all
   set-default-shape turtles "square"
-  ;; make some green trees
-  ask patches with [(random-float 100) < density]
+  if not distribucion-personalizada [
+    ;; make some green trees
+    ask patches with [(random-float 100) < density]
     [ set pcolor green ]
-  ;; make a column of burning trees
-  ask patches with [pxcor = min-pxcor]
+    ;; make a column of burning trees
+    ask patches with [pxcor = min-pxcor]
     [ ignite ]
-  ;; set tree counts
-  set initial-trees count patches with [pcolor = green]
+    ;; set tree counts
+    set initial-trees count patches with [pcolor = green]
+  ]
   set burned-trees 0
   reset-ticks
 end
 
 to go
+  if distribucion-personalizada and ticks = 0 [
+    ask n-of 10 patches with [pcolor = green] [ ignite ]
+    set initial-trees count patches with [pcolor = green]
+  ]
   if not any? turtles  ;; either fires or embers
     [ stop ]
   ask fires
@@ -124,18 +132,54 @@ to fade-embers
           die ] ]
 end
 
+to csv
+  let file user-new-file
+  if is-string? file[
+    file-open file
+    foreach sort patches[p ->
+      ask p [
+        file-print(word pxcor "," pycor "," pcolor)
+      ]
+    ]
+    file-close
+  ]
+end
+
+to cargar-distribucion
+  file-open user-file
+
+  while [not file-at-end?] [
+    let row csv:from-row file-read-line
+    ask patch (item 0 row) (item 1 row) [
+      set pcolor (item 2 row)
+    ]
+
+  ]
+
+  file-close
+end
+
+to borrar
+  clear-all
+end
+
+to color-celdas [c]
+  while [mouse-down?][
+    ask patch mouse-xcor mouse-ycor [set pcolor c]
+  ]
+end
 
 ; Copyright 1997 Uri Wilensky.
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-417
-10
-927
-521
+291
+23
+753
+486
 -1
 -1
-2.0
+2.26
 1
 10
 1
@@ -145,10 +189,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--125
-125
--125
-125
+-100
+100
+-100
+100
 1
 1
 1
@@ -156,10 +200,10 @@ ticks
 30.0
 
 MONITOR
-955
-14
-1070
-59
+1362
+16
+1477
+61
 percent burned
 (burned-trees / initial-trees)\n* 100
 1
@@ -167,25 +211,25 @@ percent burned
 11
 
 SLIDER
-85
-80
-270
-113
+42
+28
+227
+61
 density
 density
 0.0
 99.0
-76.0
+46.0
 1.0
 1
 %
 HORIZONTAL
 
 BUTTON
-186
-121
-255
-157
+142
+73
+211
+109
 go
 go
 T
@@ -199,10 +243,10 @@ NIL
 0
 
 BUTTON
-106
-121
-176
-157
+62
+73
+132
+109
 setup
 setup
 NIL
@@ -216,25 +260,25 @@ NIL
 1
 
 SLIDER
-58
-195
-316
-228
+14
+124
+272
+157
 probabilidad-de-propagarse
 probabilidad-de-propagarse
 0
 100
-33.0
+74.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-60
-248
-319
-281
+12
+171
+271
+204
 propagacion-larga-distancia
 propagacion-larga-distancia
 0
@@ -242,10 +286,10 @@ propagacion-larga-distancia
 -1000
 
 SLIDER
-91
-290
-263
-323
+54
+213
+226
+246
 viento-sur-norte
 viento-sur-norte
 -25
@@ -257,10 +301,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-85
-335
-269
-368
+48
+258
+232
+291
 viento-oeste-este
 viento-oeste-este
 -25
@@ -272,10 +316,125 @@ NIL
 HORIZONTAL
 
 SWITCH
-93
-379
+13
+354
+269
+387
+distribucion-personalizada
+distribucion-personalizada
+1
+1
+-1000
+
+BUTTON
+159
+404
+270
+437
+NIL
+borrar
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+13
+404
+135
+437
+plantar árboles
+color-celdas green
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+14
+451
+136
+484
+guardar distribución
+csv
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+160
+451
+270
+484
+cargar distribucion
+cargar-distribucion
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+PLOT
+782
+16
+1349
 265
-412
+arboles quemándose
+ticks
+arboles
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"quemandose" 1.0 0 -16777216 true "" "plot count turtles with [color = red]"
+
+PLOT
+784
+275
+1353
+489
+arboles quemados
+tick
+arboles
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot burned-trees"
+
+SWITCH
+48
+309
+236
+342
 vecindad-moore
 vecindad-moore
 0
@@ -656,7 +815,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.2.0
 @#$#@#$#@
 set density 60.0
 setup
